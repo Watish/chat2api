@@ -433,7 +433,8 @@ class ChatService:
                 logger.info(f"file_id: {file_id}, upload_url: {upload_url}")
                 return file_id, upload_url
             if r.status_code == 429:
-                detail = json.loads(r.text)
+                print("上传文件429 ERR")
+                detail = json.loads(r.text).get("detail", json.loads(r.text))
                 if "type" in detail and detail["type"] == "throttled":
                     if callback_url != None:
                         requests.post(callback_url,json=detail,headers=headers,timeout=5)
