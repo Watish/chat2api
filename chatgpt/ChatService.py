@@ -342,6 +342,10 @@ class ChatService:
                     detail = json.loads(rtext).get("detail", json.loads(rtext))
                     if r.status_code == 429:
                         check_is_limit(detail, token=self.req_token, model=self.req_model)
+                    # 添加上传文件限制报错
+                    if "type" in detail and detail["type"] == "throttled" and "rate_limit_info" in detail:
+                        raise HTTPException(status_code=r.status_code, detail=detail)
+
                 else:
                     if "cf_chl_opt" in rtext:
                         # logger.error(f"Failed to send conversation: cf_chl_opt")
