@@ -42,6 +42,9 @@ platform_tuple_str = os.getenv('PLATFORM_TUPLE', '()')
 cf_file_url = os.getenv('CF_FILE_URL', None)
 turnstile_solver_url = os.getenv('TURNSTILE_SOLVER_URL', None)
 
+callback_url = os.getenv('CALLBACK_URL', None)
+print(f"Env callback_url: {callback_url}")
+
 history_disabled = is_true(os.getenv('HISTORY_DISABLED', True))
 pow_difficulty = os.getenv('POW_DIFFICULTY', '000032')
 retry_times = int(os.getenv('RETRY_TIMES', 3))

@@ -3,6 +3,7 @@ import json
 import random
 import uuid
 
+import requests
 from fastapi import HTTPException
 from starlette.concurrency import run_in_threadpool
 
@@ -28,6 +29,7 @@ from utils.configs import (
     auth_key,
     turnstile_solver_url,
     oai_language,
+    callback_url
 )
 
 
@@ -430,6 +432,12 @@ class ChatService:
                 upload_url = res.get('upload_url')
                 logger.info(f"file_id: {file_id}, upload_url: {upload_url}")
                 return file_id, upload_url
+            if r.status_code == 429:
+                detail = json.loads(r.text)
+                if "type" in detail and detail["type"] == "throttled":
+                    if callback_url != None:
+                        requests.post(callback_url,json=detail,headers=headers,timeout=5)
+                    raise HTTPException(status_code=r.status_code, detail=detail)
             else:
                 raise HTTPException(status_code=r.status_code, detail=r.text)
         except Exception as e:
