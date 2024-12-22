@@ -29,15 +29,22 @@ async def chatgpt_html(request: Request):
 
     # 加入鉴权
     if callback_url is not None:
-        authResp = requests.post(callback_url + "/auth/callback", json={
-            token
-        })
-        if authResp.status_code != 200:
+        try:
+            authResp = requests.post(callback_url + "/auth/callback", json={
+                "token": token
+            })
+            rText = authResp.text
+            print("auth response", rText)
+            if authResp.status_code != 200:
+                return await login_html(request)
+            authJson = json.loads(authResp.text)
+            if "code" in authJson and authJson["code"] < 1:
+                return await login_html(request)
+            if "data" in authJson and "token" in authJson["data"]:
+                token = authJson["data"]["token"]
+        except Exception as e:
+            print(e)
             return await login_html(request)
-        authJson = json.loads(authResp.text)
-        if authJson["code"] < 1:
-            return await login_html(request)
-        token = authJson.data.token
 
     user_remix_context = chatgpt_context.copy()
     set_value_for_key(user_remix_context, "user", {"id": "user-chatgpt"})

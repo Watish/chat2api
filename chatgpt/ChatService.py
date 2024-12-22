@@ -437,7 +437,7 @@ class ChatService:
                 detail = json.loads(r.text).get("detail", json.loads(r.text))
                 if "type" in detail and detail["type"] == "throttled":
                     if callback_url != None:
-                        requests.post(callback_url,json=detail,headers=headers,timeout=5)
+                        requests.post(callback_url + "/error/callback",json=detail,headers=headers,timeout=5)
                     raise HTTPException(status_code=r.status_code, detail=detail)
             else:
                 raise HTTPException(status_code=r.status_code, detail=r.text)
