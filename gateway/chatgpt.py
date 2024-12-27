@@ -17,6 +17,9 @@ with open("templates/chatgpt_context.json", "r", encoding="utf-8") as f:
 @app.get("/", response_class=HTMLResponse)
 async def chatgpt_html(request: Request):
     token = request.query_params.get("token")
+    if token is None:
+        return await login_html(request)
+
     if not token:
         token = request.cookies.get("token")
 
